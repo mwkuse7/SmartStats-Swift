@@ -24,9 +24,42 @@ struct BatterSeason: Codable {
     let rank: Int
     let position: Position
     
+    static var example = BatterSeason(
+        season: "2025",
+        stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
+        team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
+        player: Player(id: 547180, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
+        league: League(id: 104, name: "NL"),
+        numTeams: 1,
+        rank: 47,
+        position: Position(code: "3", name: "First Base", type: "Infielder", abbreviation: "1B")
+    )
+    
+    static var example2 = BatterSeason(
+        season: "2025",
+        stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
+        team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
+        player: Player(id: 547181, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
+        league: League(id: 104, name: "NL"),
+        numTeams: 1,
+        rank: 47,
+        position: Position(code: "3", name: "First Base", type: "Infielder", abbreviation: "1B")
+    )
+    
+    static var example3 = BatterSeason(
+        season: "2025",
+        stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
+        team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
+        player: Player(id: 547182, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
+        league: League(id: 104, name: "NL"),
+        numTeams: 1,
+        rank: 47,
+        position: Position(code: "3", name: "First Base", type: "Infielder", abbreviation: "1B")
+    )
+    
     var statsArray: [(key: String, value: String)] {
         if let statsDictionary = stat.dictionary {
-            return statsDictionary.sorted(by: { $0.key < $1.key } ).map { key, value in
+            return statsDictionary.map { key, value in
                 (key, "\(value)")
             }
         }
