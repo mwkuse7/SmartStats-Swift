@@ -48,4 +48,6 @@ enum StatAbbreviation {
     static func abbreviate(_ stat: String) -> String {
         return statAbbreviations[stat] ?? "N/A"
     }
+    
+    static let collection: [String] = Array(statAbbreviations.keys).sorted()
 }
