@@ -17,7 +17,7 @@ struct ContentView: View {
         SortDescriptor(\BatterSeason.stat.ops, order: .reverse)
     ]
 
-    @State private var activeColumn: String = "ops"
+    @State private var activeColumn: String = "age"
 
     // Sort players using active SortDescriptor
     var sortedBatters: [BatterSeason]? {
@@ -75,14 +75,19 @@ struct ContentView: View {
                         ScrollViewReader { proxy in
                             StatScrollView(
                                 players: sortedBatters,
-                                //                            activeColumn: $activeColumn
+                                activeColumn: activeColumn
                             )
                             .onChange(of: activeColumn) { _, newValue in
                                 withAnimation {
                                     proxy.scrollTo(newValue, anchor: .leading)
                                 }
-                                
+
                                 sortOrder = setSortOrder(newValue)
+                            }
+                            .onAppear {
+                                proxy.scrollTo(activeColumn, anchor: .leading)
+                                
+                                sortOrder = setSortOrder(activeColumn)
                             }
                         }
                     }
