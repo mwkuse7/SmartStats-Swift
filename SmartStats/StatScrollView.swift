@@ -10,25 +10,24 @@ import SwiftUI
 struct StatScrollView: View {
     var players: [BatterSeason]
     
-//    @Binding var activeColumn: String
+    var activeColumn: String
     
     var body: some View {
-//        ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack {
+                    HStack(spacing: 0){
                         ForEach(StatAbbreviation.collection, id: \.self) { stat in
                             Text(StatAbbreviation.abbreviate(stat))
                                 .font(.caption.italic())
-                                .frame(width: 50)
+                                .frame(width: 50, height: 30)
+                                .background(stat == activeColumn ? .blue.opacity(0.75) : .clear)
                                 .id(stat)
                         }
                     }
-                    .frame(height: 30)
                     .border(Color.secondary, width: 0.5)
                     
                     ForEach(players, id: \.player.id) { player in
-                        HStack {
+                        HStack(spacing: 0) {
                             ForEach(player.statsArray, id: \.key) { stat in
                                 VStack {
                                     Text(
@@ -41,26 +40,20 @@ struct StatScrollView: View {
                                     Text(stat.value)
                                         .font(.headline)
                                 }
-                                .frame(width: 50)
+                                .frame(width: 50, height: 50)
+                                .background(stat.key == activeColumn ? .blue.opacity(0.75) : .clear)
                             }
                         }
-                        .frame(height: 50)
                         .border(Color.secondary, width: 0.5)
                     }
                 }
             }
-//            .onChange(of: activeColumn) { oldValue, newValue in
-//                proxy.scrollTo(newValue, anchor: .leading)
-//            }
-//        }
-//        .scrollPosition(id: $activeColumn)
-//        .scrollTargetBehavior(.viewAligned)
-        
     }
     
-    init(players: [BatterSeason]/*, activeColumn: Binding<String>*/) {
+    init(players: [BatterSeason], activeColumn: String) {
         self.players = players
-//        self._activeColumn = activeColumn
+        self.activeColumn = activeColumn
+
         UIScrollView.appearance().bounces = false
     }
 }
@@ -71,5 +64,7 @@ struct StatScrollView: View {
     players.append(BatterSeason.example2)
     players.append(BatterSeason.example3)
     
-    return StatScrollView(players: players/*, activeColumn: .constant("ops")*/)
+    let activeColumn = "ops"
+    
+    return StatScrollView(players: players, activeColumn: activeColumn)
 }
