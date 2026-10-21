@@ -13,8 +13,13 @@ struct ContentView: View {
     @State private var players: AllBatters? = nil
 
     // Active Sort Descriptor
-    @State private var sortOrder = [SortDescriptor(\BatterSeason.stat.ops)]
-    
+    @State private var sortOrder = [
+        SortDescriptor(\BatterSeason.stat.ops, order: .reverse)
+    ]
+
+    @State private var activeColumn: String = "ops"
+
+    // Sort players using active SortDescriptor
     var sortedBatters: [BatterSeason]? {
         players?.batters.sorted(using: sortOrder) ?? nil
     }
@@ -25,9 +30,19 @@ struct ContentView: View {
                 ScrollView {
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 0) {
+                            HStack {
+                                Text("Player")
+                            }
+                            .containerRelativeFrame(.horizontal) { size, axis in
+                                size * 0.45
+                            }
+                            .frame(height: 30)
+                            .border(Color.secondary, width: 0.5)
+
                             ForEach(sortedBatters, id: \.player.id) { player in
                                 HStack {
                                     Button {
+                                        // Button to show player view
 
                                     } label: {
                                         HStack {
@@ -47,15 +62,29 @@ struct ContentView: View {
                                         .padding(.leading)
                                     }
                                 }
-                                .containerRelativeFrame(.horizontal) { size, axis in
+                                .containerRelativeFrame(.horizontal) {
+                                    size,
+                                    axis in
                                     size * 0.45
                                 }
                                 .frame(height: 50)
                                 .border(Color.secondary, width: 0.5)
                             }
                         }
-                        
-                        StatScrollView(players: sortedBatters)
+
+                        ScrollViewReader { proxy in
+                            StatScrollView(
+                                players: sortedBatters,
+                                //                            activeColumn: $activeColumn
+                            )
+                            .onChange(of: activeColumn) { _, newValue in
+                                withAnimation {
+                                    proxy.scrollTo(newValue, anchor: .leading)
+                                }
+                                
+                                sortOrder = setSortOrder(newValue)
+                            }
+                        }
                     }
                 }
                 .navigationTitle("All Players")
@@ -67,13 +96,14 @@ struct ContentView: View {
                             }
                         }
                     }
-                    
+
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu("Sort", systemImage: "arrow.up.arrow.down") {
-                            Picker("Sort By", selection: $sortOrder) {
-                                ForEach(StatAbbreviation.collection, id: \.self) { stat in
+                            Picker("Sort By", selection: $activeColumn) {
+                                ForEach(StatAbbreviation.collection, id: \.self)
+                                { stat in
                                     Text(StatAbbreviation.abbreviate(stat))
-                                        .tag(setSortOrder(stat))
+                                        .tag(stat)
                                 }
                             }
                         }
@@ -118,7 +148,7 @@ struct ContentView: View {
             print("Error loading players: \(error.localizedDescription)")
         }
     }
-    
+
     func setSortOrder(_ sortOrder: String) -> [SortDescriptor<BatterSeason>] {
         switch sortOrder {
         case "age":
@@ -126,7 +156,12 @@ struct ContentView: View {
         case "atBats":
             return [SortDescriptor(\BatterSeason.stat.atBats, order: .reverse)]
         case "atBatsPerHomeRun":
-            return [SortDescriptor(\BatterSeason.stat.atBatsPerHomeRun, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.atBatsPerHomeRun,
+                    order: .reverse
+                )
+            ]
         case "avg":
             return [SortDescriptor(\BatterSeason.stat.avg, order: .reverse)]
         case "airOuts":
@@ -134,59 +169,126 @@ struct ContentView: View {
         case "babip":
             return [SortDescriptor(\BatterSeason.stat.babip, order: .reverse)]
         case "baseOnBalls":
-            return [SortDescriptor(\BatterSeason.stat.baseOnBalls, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.baseOnBalls, order: .reverse)
+            ]
         case "catchersInterference":
-            return [SortDescriptor(\BatterSeason.stat.catchersInterference, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.catchersInterference,
+                    order: .reverse
+                )
+            ]
         case "caughtStealing":
-            return [SortDescriptor(\BatterSeason.stat.caughtStealing, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.caughtStealing,
+                    order: .reverse
+                )
+            ]
         case "caughtStealingPercentage":
-            return [SortDescriptor(\BatterSeason.stat.caughtStealingPercentage, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.caughtStealingPercentage,
+                    order: .reverse
+                )
+            ]
         case "doubles":
             return [SortDescriptor(\BatterSeason.stat.doubles, order: .reverse)]
         case "gamesPlayed":
-            return [SortDescriptor(\BatterSeason.stat.gamesPlayed, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.gamesPlayed, order: .reverse)
+            ]
         case "groundIntoDoublePlay":
-            return [SortDescriptor(\BatterSeason.stat.groundIntoDoublePlay, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.groundIntoDoublePlay,
+                    order: .reverse
+                )
+            ]
         case "groundOuts":
-            return [SortDescriptor(\BatterSeason.stat.groundOuts, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.groundOuts, order: .reverse)
+            ]
         case "groundOutsToAirOuts":
-            return [SortDescriptor(\BatterSeason.stat.groundOutsToAirouts, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.groundOutsToAirouts,
+                    order: .reverse
+                )
+            ]
         case "hitByPitch":
-            return [SortDescriptor(\BatterSeason.stat.hitByPitch, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.hitByPitch, order: .reverse)
+            ]
         case "hits":
             return [SortDescriptor(\BatterSeason.stat.hits, order: .reverse)]
         case "homeRuns":
-            return [SortDescriptor(\BatterSeason.stat.homeRuns, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.homeRuns, order: .reverse)
+            ]
         case "intentionalWalks":
-            return [SortDescriptor(\BatterSeason.stat.intentionalWalks, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.intentionalWalks,
+                    order: .reverse
+                )
+            ]
         case "leftOnBase":
-            return [SortDescriptor(\BatterSeason.stat.leftOnBase, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.leftOnBase, order: .reverse)
+            ]
         case "numberOfPitches":
-            return [SortDescriptor(\BatterSeason.stat.numberOfPitches, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.numberOfPitches,
+                    order: .reverse
+                )
+            ]
         case "obp":
             return [SortDescriptor(\BatterSeason.stat.obp, order: .reverse)]
         case "ops":
             return [SortDescriptor(\BatterSeason.stat.ops, order: .reverse)]
         case "plateAppearances":
-            return [SortDescriptor(\BatterSeason.stat.plateAppearances, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.plateAppearances,
+                    order: .reverse
+                )
+            ]
         case "rbi":
             return [SortDescriptor(\BatterSeason.stat.rbi, order: .reverse)]
         case "runs":
             return [SortDescriptor(\BatterSeason.stat.runs, order: .reverse)]
         case "sacBunts":
-            return [SortDescriptor(\BatterSeason.stat.sacBunts, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.sacBunts, order: .reverse)
+            ]
         case "sacFlies":
-            return [SortDescriptor(\BatterSeason.stat.sacFlies, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.sacFlies, order: .reverse)
+            ]
         case "slg":
             return [SortDescriptor(\BatterSeason.stat.slg, order: .reverse)]
         case "stolenBasePercentage":
-            return [SortDescriptor(\BatterSeason.stat.stolenBasePercentage, order: .reverse)]
+            return [
+                SortDescriptor(
+                    \BatterSeason.stat.stolenBasePercentage,
+                    order: .reverse
+                )
+            ]
         case "stolenBases":
-            return [SortDescriptor(\BatterSeason.stat.stolenBases, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.stolenBases, order: .reverse)
+            ]
         case "strikeOuts":
-            return [SortDescriptor(\BatterSeason.stat.strikeOuts, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.strikeOuts, order: .reverse)
+            ]
         case "totalBases":
-            return [SortDescriptor(\BatterSeason.stat.totalBases, order: .reverse)]
+            return [
+                SortDescriptor(\BatterSeason.stat.totalBases, order: .reverse)
+            ]
         case "triples":
             return [SortDescriptor(\BatterSeason.stat.triples, order: .reverse)]
         default:
