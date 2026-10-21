@@ -59,7 +59,7 @@ struct BatterSeason: Codable {
     
     var statsArray: [(key: String, value: String)] {
         if let statsDictionary = stat.dictionary {
-            return statsDictionary.map { key, value in
+            return statsDictionary.sorted(by: { $0.key < $1.key }).map { key, value in
                 (key, "\(value)")
             }
         }
