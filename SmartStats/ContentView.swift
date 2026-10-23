@@ -13,25 +13,39 @@ struct ContentView: View {
     @State private var players: AllBatters? = nil
 
     // Active Sort Descriptor
+    @State private var activeColumn: String = "age"
     @State private var sortOrder = [
         SortDescriptor(\BatterSeason.stat.ops, order: .reverse)
     ]
-
-    @State private var activeColumn: String = "age"
 
     // Sort players using active SortDescriptor
     var sortedBatters: [BatterSeason]? {
         players?.batters.sorted(using: sortOrder) ?? nil
     }
 
+    // Search Text
+    @State private var searchText: String = ""
+
+    // Filter Players Based on Search Text
+    var filteredPlayers: [BatterSeason]? {
+        if searchText.isEmpty == false {
+            return sortedBatters?.filter {
+                $0.player.fullName.localizedStandardContains(searchText)
+            }
+        } else {
+            return sortedBatters
+        }
+    }
+
     var body: some View {
         NavigationStack {
-            if let sortedBatters = sortedBatters {
+            if let filteredPlayers {
                 ScrollView {
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 0) {
                             HStack {
                                 Text("Player")
+                                    .font(.headline.italic())
                             }
                             .containerRelativeFrame(.horizontal) { size, axis in
                                 size * 0.45
@@ -39,7 +53,7 @@ struct ContentView: View {
                             .frame(height: 30)
                             .border(Color.secondary, width: 0.5)
 
-                            ForEach(sortedBatters, id: \.player.id) { player in
+                            ForEach(filteredPlayers, id: \.player.id) { player in
                                 HStack {
                                     Button {
                                         // Button to show player view
@@ -74,7 +88,7 @@ struct ContentView: View {
 
                         ScrollViewReader { proxy in
                             StatScrollView(
-                                players: sortedBatters,
+                                players: filteredPlayers,
                                 activeColumn: activeColumn
                             )
                             .onChange(of: activeColumn) { _, newValue in
@@ -86,7 +100,7 @@ struct ContentView: View {
                             }
                             .onAppear {
                                 proxy.scrollTo(activeColumn, anchor: .leading)
-                                
+
                                 sortOrder = setSortOrder(activeColumn)
                             }
                         }
@@ -114,6 +128,7 @@ struct ContentView: View {
                         }
                     }
                 }
+                .searchable(text: $searchText)
             } else {
                 ProgressView()
             }
@@ -129,7 +144,7 @@ struct ContentView: View {
         guard
             let url = URL(
                 string:
-                    "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=2025&playerPool=All&sortStat=onBasePlusSlugging&order=desc"
+                    "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=2026&playerPool=All&sortStat=onBasePlusSlugging&order=desc"
             )
         else { return }
 
