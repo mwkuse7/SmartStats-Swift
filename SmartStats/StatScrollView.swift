@@ -18,7 +18,7 @@ struct StatScrollView: View {
                     HStack(spacing: 0){
                         ForEach(StatAbbreviation.collection, id: \.self) { stat in
                             Text(StatAbbreviation.abbreviate(stat))
-                                .font(.caption.italic())
+                                .font(.caption.italic().bold())
                                 .frame(width: 50, height: 30)
                                 .background(stat == activeColumn ? .blue.opacity(0.75) : .clear)
                                 .id(stat)
@@ -54,7 +54,7 @@ struct StatScrollView: View {
         self.players = players
         self.activeColumn = activeColumn
 
-        UIScrollView.appearance().bounces = false
+//        UIScrollView.appearance().bounces = false
     }
 }
 
