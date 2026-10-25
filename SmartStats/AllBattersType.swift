@@ -1,5 +1,5 @@
 //
-//  PlayerTypes.swift
+//  AllBattersType.swift
 //  SmartStats
 //
 //  Created by Max Kuse on 9/2/26.
@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Move to separate file
 extension Encodable {
     var dictionary: [String: Any]? {
         guard let data = try? JSONEncoder().encode(self) else { return nil }
@@ -29,28 +30,6 @@ struct BatterSeason: Codable {
         stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
         team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
         player: Player(id: 547180, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
-        league: League(id: 104, name: "NL"),
-        numTeams: 1,
-        rank: 47,
-        position: Position(code: "3", name: "First Base", type: "Infielder", abbreviation: "1B")
-    )
-    
-    static var example2 = BatterSeason(
-        season: "2025",
-        stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
-        team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
-        player: Player(id: 547181, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
-        league: League(id: 104, name: "NL"),
-        numTeams: 1,
-        rank: 47,
-        position: Position(code: "3", name: "First Base", type: "Infielder", abbreviation: "1B")
-    )
-    
-    static var example3 = BatterSeason(
-        season: "2025",
-        stat: Stat(age: 32, atBats: 501, atBatsPerHomeRun: "18.56", avg: ".261", airOuts: 125, babip: ".292", baseOnBalls: 70, catchersInterference: 0, caughtStealing: 2, caughtStealingPercentage: ".143", doubles: 32, gamesPlayed: 132, groundIntoDoublePlay: 5, groundOuts: 127, groundOutsToAirouts: "1.02", hitByPitch: 6, hits: 131, homeRuns: 27, intentionalWalks: 6, leftOnBase: 222, numberOfPitches: 2172, obp: ".357", ops: ".844", plateAppearances: 580, rbi: 75, runs: 72, sacBunts: 0, sacFlies: 3, slg: ".487", stolenBasePercentage: ".857", stolenBases: 12, strikeOuts: 121, totalBases: 244, triples: 0),
-        team: Team(id: 143, name: "Philadelphia Phillies", link: "/api/v1/teams/143"),
-        player: Player(id: 547182, fullName: "Bryce Harper", link: "/api/v1/people/547180", firstName: "Bryce", lastName: "Harper"),
         league: League(id: 104, name: "NL"),
         numTeams: 1,
         rank: 47,
@@ -207,6 +186,7 @@ struct BatterSeason: Codable {
 
 struct AllBatters: Codable {
     
+    let totalSplits: Int
     let batters: [BatterSeason]
     
     private enum RootCodingKeys: String, CodingKey {
@@ -214,6 +194,7 @@ struct AllBatters: Codable {
     }
     
     private enum OuterStatsCodingKeys: String, CodingKey {
+        case totalSplits
         case splits
     }
 
@@ -221,9 +202,14 @@ struct AllBatters: Codable {
         let rootContainer = try decoder.container(keyedBy: RootCodingKeys.self)
         var outerStatsContainer = try rootContainer.nestedUnkeyedContainer(forKey: .stats)
         var extractedBatters = [BatterSeason]()
+        var totalSplits = 0
         
         while !outerStatsContainer.isAtEnd {
             if let splitsContainer = try? outerStatsContainer.nestedContainer(keyedBy: OuterStatsCodingKeys.self) {
+                if splitsContainer.contains(.totalSplits) {
+                    totalSplits = try splitsContainer.decode(Int.self, forKey: .totalSplits)
+                }
+                
                 if splitsContainer.contains(.splits) {
                     extractedBatters = try splitsContainer.decode([BatterSeason].self, forKey: .splits)
                     break
@@ -234,7 +220,7 @@ struct AllBatters: Codable {
         }
         
         self.batters = extractedBatters
-        
+        self.totalSplits = totalSplits
     }
 }
 

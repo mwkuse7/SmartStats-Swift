@@ -1,5 +1,5 @@
 //
-//  AllPlayersView.swift
+//  AllBattersView.swift
 //  SmartStats
 //
 //  Created by Max Kuse on 8/30/26.
@@ -7,45 +7,41 @@
 
 import SwiftUI
 
-struct AllPlayersView: View {
+struct AllBattersView: View {
     @State private var showingPlayerView = false
     @State private var activePlayer: BatterSeason? = nil
-    @State private var players: AllBatters? = nil
+    
+    @State private var players: [BatterSeason] = []
 
     // Active Sort Descriptor
-    @State private var activeColumn: String = "age"
+    @State private var activeColumn: String = "ops"
     @State private var sortOrder = [
         SortDescriptor(\BatterSeason.stat.ops, order: .reverse)
     ]
-
-    // Sort players using active SortDescriptor
-    var sortedBatters: [BatterSeason]? {
-        players?.batters.sorted(using: sortOrder) ?? nil
-    }
 
     // Search Text
     @State private var searchText: String = ""
 
     // Filter Players Based on Search Text
-    var filteredPlayers: [BatterSeason]? {
+    var filteredPlayers: [BatterSeason] {
         if searchText.isEmpty == false {
-            return sortedBatters?.filter {
+            return players.sorted(using: sortOrder).filter {
                 $0.player.fullName.localizedStandardContains(searchText)
             }
         } else {
-            return sortedBatters
+            return players.sorted(using: sortOrder)
         }
     }
 
     var body: some View {
         NavigationStack {
-            if let filteredPlayers {
+            if players.isEmpty == false {
                 ScrollView {
                     HStack(spacing: 0) {
-                        PlayersView(players: filteredPlayers)
+                        BattersView(players: filteredPlayers)
 
                         ScrollViewReader { proxy in
-                            StatScrollView(
+                            BatterStatScrollView(
                                 players: filteredPlayers,
                                 activeColumn: activeColumn
                             )
@@ -64,22 +60,28 @@ struct AllPlayersView: View {
                         }
                     }
                 }
-                .navigationTitle("All Batters")
+                .navigationTitle("All Batters: \(players.count)")
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Refresh", systemImage: "arrow.clockwise") {
                             Task {
-                                await loadPlayers()
+                                await fetchPlayers()
                             }
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Delete", systemImage: "trash") {
+                            
                         }
                     }
 
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu("Sort", systemImage: "arrow.up.arrow.down") {
                             Picker("Sort By", selection: $activeColumn) {
-                                ForEach(StatAbbreviation.collection, id: \.self)
+                                ForEach(BatterStatAbbreviation.collection, id: \.self)
                                 { stat in
-                                    Text(StatAbbreviation.abbreviate(stat))
+                                    Text(BatterStatAbbreviation.abbreviate(stat))
                                         .tag(stat)
                                 }
                             }
@@ -91,40 +93,89 @@ struct AllPlayersView: View {
                 ProgressView()
             }
         }
-        .task {
-            if players?.batters.isEmpty ?? true {
-                await loadPlayers()
+        .onAppear(perform: loadPlayerData)
+    }
+    
+    func removeAllPlayers() {
+        do {
+            let url = URL.documentsDirectory.appending(path: "Players.json")
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            print("Unable to remove players.")
+        }
+    }
+    
+    func savePlayerData(data: Data) {
+        let url = URL.documentsDirectory.appending(path: "Players.json")
+        
+        do {
+            try data.write(to: url, options: [.atomic, .completeFileProtection])
+        } catch {
+            print("Error saving player data.")
+        }
+    }
+    
+    func loadPlayerData() {
+        let url = URL.documentsDirectory.appending(path: "Players.json")
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try JSONDecoder().decode(AllBatters.self, from: data)
+            
+            players = decoded.batters
+        } catch {
+            Task {
+                await fetchPlayers()
             }
         }
     }
 
-    func loadPlayers() async {
-        guard
-            let url = URL(
-                string:
-                    "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=2026&playerPool=All&sortStat=onBasePlusSlugging&order=desc"
-            )
-        else { return }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let decoded = try JSONDecoder().decode(AllBatters.self, from: data)
-
-            players = decoded
-
-        } catch let DecodingError.keyNotFound(key, context) {
-            print(
-                "Missing Key '\(key.stringValue)' at path: \(context.codingPath)"
-            )
-        } catch let DecodingError.typeMismatch(type, context) {
-            print("Type mismatch for \(type) at path: \(context.codingPath)")
-        } catch let DecodingError.valueNotFound(type, context) {
-            print("Value not found for \(type) at path: \(context.codingPath)")
-        } catch let DecodingError.dataCorrupted(context) {
-            print("Data corrupted at path: \(context.codingPath)")
-        } catch {
-            print("Error loading players: \(error.localizedDescription)")
+    func fetchPlayers() async {
+        var allPlayerData = Data()
+        
+        let limit = 200
+        var offset = 0
+        var moreData = true
+        
+        while moreData {
+            guard
+                let url = URL(
+                    string:
+                        "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season=2026&playerPool=Qualified&sportId=1&limit=\(limit)&offset=\(offset)&sortStat=onBasePlusSlugging&order=desc"
+                )
+            else { return }
+            
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                let decoded = try JSONDecoder().decode(AllBatters.self, from: data)
+                
+                if !decoded.batters.isEmpty {
+                    allPlayerData.append(data)
+                    players.append(contentsOf: decoded.batters)
+                    offset += limit
+                    
+                    if players.count >= decoded.totalSplits {
+                        moreData = false
+                    }
+                } else {
+                    moreData = false
+                }
+                
+            } catch let DecodingError.keyNotFound(key, context) {
+                print(
+                    "Missing Key '\(key.stringValue)' at path: \(context.codingPath)"
+                )
+            } catch let DecodingError.typeMismatch(type, context) {
+                print("Type mismatch for \(type) at path: \(context.codingPath)")
+            } catch let DecodingError.valueNotFound(type, context) {
+                print("Value not found for \(type) at path: \(context.codingPath)")
+            } catch let DecodingError.dataCorrupted(context) {
+                print("Data corrupted at path: \(context.codingPath)")
+            } catch {
+                print("Error loading players: \(error.localizedDescription)")
+            }
         }
+        
+        savePlayerData(data: allPlayerData)
     }
 
     func setSortOrder(_ sortOrder: String) -> [SortDescriptor<BatterSeason>] {
@@ -276,5 +327,5 @@ struct AllPlayersView: View {
 }
 
 #Preview {
-    AllPlayersView()
+    AllBattersView()
 }

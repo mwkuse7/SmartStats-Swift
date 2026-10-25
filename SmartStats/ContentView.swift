@@ -11,7 +11,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             Tab("Batters", systemImage: "figure.baseball") {
-                AllPlayersView()
+                AllBattersView()
             }
             
             Tab("Favorites", systemImage: "star.fill") {
@@ -19,7 +19,7 @@ struct ContentView: View {
             }
             
             Tab("Pitchers", systemImage: "baseball.fill") {
-                AllPlayersView()
+                AllPitchersView()
             }
         }
     }
