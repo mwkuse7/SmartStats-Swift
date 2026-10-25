@@ -1,14 +1,14 @@
 //
-//  StatScrollView.swift
+//  PitcherStatScrollView.swift
 //  SmartStats
 //
-//  Created by Max Kuse on 10/8/26.
+//  Created by Max Kuse on 10/25/26.
 //
 
 import SwiftUI
 
-struct StatScrollView: View {
-    var players: [BatterSeason]
+struct PitcherStatScrollView: View {
+    var players: [PitcherSeason]
     
     var activeColumn: String
     
@@ -16,8 +16,8 @@ struct StatScrollView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0){
-                        ForEach(StatAbbreviation.collection, id: \.self) { stat in
-                            Text(StatAbbreviation.abbreviate(stat))
+                        ForEach(PitcherStatAbbreviation.collection, id: \.self) { stat in
+                            Text(PitcherStatAbbreviation.abbreviate(stat))
                                 .font(.caption.italic().bold())
                                 .frame(width: 50, height: 30)
                                 .background(stat == activeColumn ? .blue.opacity(0.75) : .clear)
@@ -31,7 +31,7 @@ struct StatScrollView: View {
                             ForEach(player.statsArray, id: \.key) { stat in
                                 VStack {
                                     Text(
-                                        StatAbbreviation.abbreviate(
+                                        PitcherStatAbbreviation.abbreviate(
                                             stat.key
                                         )
                                     )
@@ -50,21 +50,15 @@ struct StatScrollView: View {
             }
     }
     
-    init(players: [BatterSeason], activeColumn: String) {
+    init(players: [PitcherSeason], activeColumn: String) {
         self.players = players
         self.activeColumn = activeColumn
-
-//        UIScrollView.appearance().bounces = false
     }
 }
 
 #Preview {
-    var players = [BatterSeason]()
-    players.append(BatterSeason.example)
-    players.append(BatterSeason.example2)
-    players.append(BatterSeason.example3)
-    
+    let players = [PitcherSeason.example]
     let activeColumn = "ops"
     
-    return StatScrollView(players: players, activeColumn: activeColumn)
+    return PitcherStatScrollView(players: players, activeColumn: activeColumn)
 }

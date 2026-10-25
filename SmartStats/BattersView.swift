@@ -1,5 +1,5 @@
 //
-//  PlayersView.swift
+//  BattersView.swift
 //  SmartStats
 //
 //  Created by Max Kuse on 10/24/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PlayersView: View {
+struct BattersView: View {
     var players: [BatterSeason]
     
     var body: some View {
@@ -58,10 +58,7 @@ struct PlayersView: View {
 }
 
 #Preview {
-    var players = [BatterSeason]()
-    players.append(BatterSeason.example)
-    players.append(BatterSeason.example2)
-    players.append(BatterSeason.example3)
+    let players = [BatterSeason.example]
     
-    return PlayersView(players: players)
+    return BattersView(players: players)
 }
