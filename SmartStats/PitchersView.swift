@@ -10,6 +10,8 @@ import SwiftUI
 struct PitchersView: View {
     var players: [PitcherSeason]
     
+    @State private var activePitcher: PitcherSeason? = nil
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -25,8 +27,7 @@ struct PitchersView: View {
             ForEach(players, id: \.player.id) { player in
                 HStack {
                     Button {
-                        // Button to show player view
-
+                        activePitcher = player
                     } label: {
                         HStack {
                             Image(player.team.name)
@@ -53,6 +54,9 @@ struct PitchersView: View {
                 .frame(height: 50)
                 .border(Color.secondary, width: 0.5)
             }
+        }
+        .sheet(item: $activePitcher) { pitcher in
+            PitcherDetailView(pitcher: pitcher)
         }
     }
 }

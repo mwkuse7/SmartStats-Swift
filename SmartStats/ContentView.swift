@@ -15,13 +15,14 @@ struct ContentView: View {
             }
             
             Tab("Favorites", systemImage: "star.fill") {
-                Text("Favorites")
+                FavoritePlayersView()
             }
             
             Tab("Pitchers", systemImage: "baseball.fill") {
                 AllPitchersView()
             }
         }
+
     }
 }
 

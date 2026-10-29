@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PitcherSeason: Codable {
+struct PitcherSeason: Codable, Equatable, Identifiable {
     let season: String
     let stat: Stat
     let team: Team
@@ -16,6 +16,10 @@ struct PitcherSeason: Codable {
     let numTeams: Int
     let rank: Int
     let position: Position
+    
+    var id: Int {
+        player.id
+    }
     
     static var example = PitcherSeason(season: "2025", stat: Stat(age: 23, gamesPlayed: 32, gamesStarted: 32, groundOuts: 167, airOuts: 166, runs: 45, doubles: 37, triples: 2, homeRuns: 11, strikeOuts: 216, baseOnBalls: 42, intentionalWalks: 0, hits: 136, hitByPitch: 6, avg: ".199", atBats: 684, obp: ".251", slg: ".307", ops: ".558", caughtStealing: 2, stolenBases: 4, stolenBasePercentage: ".667", caughtStealingPercentage: ".333", groundIntoDoublePlay: 13, numberOfPitches: 2997, era: "1.97", inningsPitched: "187.2", wins: 10, losses: 10, saves: 0, saveOpportunities: 0, holds: 0, blownSaves: 0, earnedRuns: 41, whip: "0.95", battersFaced: 733, outs: 563, gamesPitched: 32, completeGames: 1, shutouts: 0, strikes: 1952, strikePercentage: ".650", hitBatsmen: 6, balks: 0, wildPitches: 2, pickoffs: 1, totalBases: 210, groundOutsToAirouts: "1.01", winPercentage: ".500", pitchesPerInning: "15.97", gamesFinished: 0, strikeoutWalkRatio: "5.14", strikeoutsPer9Inn: "10.36", walksPer9Inn: "2.01", hitsPer9Inn: "6.52", runsScoredPer9: "2.16", homeRunsPer9: "0.53", inheritedRunners: 0, inheritedRunnersScored: 0, catchersInterference: 0, sacBunts: 0, sacFlies: 1), team: Team(id: 134, name: "Pittsburgh Pirates", link: "/api/v1/teams/134"), player: Player(id: 694973, fullName: "Paul Skenes", link: "/api/v1/people/694973", firstName: "Paul", lastName: "Skenes"), league: League(id: 104, name: "NL"), numTeams: 1, rank: 1, position: Position(code: "1", name: "Pitcher", type: "Pitcher", abbreviation: "P"))
     
@@ -220,6 +224,10 @@ struct PitcherSeason: Codable {
             case name
             case link
         }
+    }
+    
+    static func ==(lhs: PitcherSeason, rhs: PitcherSeason) -> Bool {
+        lhs.player.id == rhs.player.id
     }
     
 }
