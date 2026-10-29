@@ -15,7 +15,7 @@ extension Encodable {
     }
 }
 
-struct BatterSeason: Codable {
+struct BatterSeason: Codable, Equatable, Identifiable {
     let season: String
     let stat: Stat
     let team: Team
@@ -24,6 +24,10 @@ struct BatterSeason: Codable {
     let numTeams: Int
     let rank: Int
     let position: Position
+    
+    var id: Int {
+        player.id
+    }
     
     static var example = BatterSeason(
         season: "2025",
@@ -180,6 +184,10 @@ struct BatterSeason: Codable {
             case name
             case link
         }
+    }
+    
+    static func ==(lhs: BatterSeason, rhs: BatterSeason) -> Bool {
+        lhs.player.id == rhs.player.id
     }
     
 }
