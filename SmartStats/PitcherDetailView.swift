@@ -13,9 +13,11 @@ struct PitcherDetailView: View {
     
     var pitcher: PitcherSeason
     
+    @State private var previousSeasons: [PitcherSeason] = []
+    
     var body: some View {
         NavigationStack {
-            VStack {
+            ScrollView {
                 HStack {
                     Image(pitcher.team.name)
                         .resizable()
@@ -30,20 +32,25 @@ struct PitcherDetailView: View {
                             .foregroundStyle(.secondary)
                         
                         HStack {
-                            Text(pitcher.position.name)
+                            Text(pitcher.position?.name ?? "Unknown")
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
                 .padding(.horizontal, 10)
                 
-                Text("\(pitcher.season) Stats")
-                    .padding(.vertical, 20)
-                
-                PitcherStatScrollView(players: [pitcher], activeColumn: "none")
+                ForEach(previousSeasons, id: \.season) { season in
+                    VStack {
+                        Text(season.season)
+                            .font(.headline)
+                        PitcherStatScrollView(players: [season], activeColumn: "none")
+                    }
+                    .padding(.vertical, 10)
+                }
                 
                 Spacer()
             }
+            .scrollBounceBehavior(.basedOnSize)
             .padding(.vertical, 20)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -68,6 +75,35 @@ struct PitcherDetailView: View {
                     }
                 }
             }
+        }
+        .task {
+            await fetchSeasons()
+        }
+    }
+    
+    func fetchSeasons() async {
+        guard let url = URL(string: "https://statsapi.mlb.com/api/v1/people/\(String(pitcher.id))/stats?stats=yearByYear&group=pitching") else { return }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            let fetchedStats = try JSONDecoder().decode(AllPitchers.self, from: data)
+            
+            previousSeasons = fetchedStats.pitchers
+            previousSeasons = previousSeasons.sorted(by: { $0.season > $1.season })
+            
+        } catch let DecodingError.keyNotFound(key, context) {
+            print(
+                "Missing Key '\(key.stringValue)' at path: \(context.codingPath)"
+            )
+        } catch let DecodingError.typeMismatch(type, context) {
+            print("Type mismatch for \(type) at path: \(context.codingPath)")
+        } catch let DecodingError.valueNotFound(type, context) {
+            print("Value not found for \(type) at path: \(context.codingPath)")
+        } catch let DecodingError.dataCorrupted(context) {
+            print("Data corrupted at path: \(context.codingPath)")
+        } catch {
+            print("Error loading players: \(error.localizedDescription)")
         }
     }
 }
