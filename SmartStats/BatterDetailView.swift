@@ -14,12 +14,55 @@ struct BatterDetailView: View {
     var batter: BatterSeason
     
     var body: some View {
-        Text(String(favorites.batters.count))
-        Button("Favorite") {
-            if favorites.contains(batter) {
-                favorites.remove(batter)
-            } else {
-                favorites.add(batter)
+        NavigationStack {
+            VStack {
+                HStack {
+                    Image(batter.team.name)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                    
+                    VStack {
+                        Text(batter.player.fullName)
+                            .font(.title)
+                        
+                        Text(batter.team.name)
+                            .foregroundStyle(.secondary)
+                        
+                        HStack {
+                            Text(batter.position.name)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .padding(.horizontal, 10)
+                
+                Text("\(batter.season) Stats")
+                    .padding(.vertical, 20)
+                
+                BatterStatScrollView(players: [batter], activeColumn: "none")
+                
+                Spacer()
+            }
+            .padding(.vertical, 20)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        if favorites.contains(batter) {
+                            favorites.remove(batter)
+                        } else {
+                            favorites.add(batter)
+                        }
+                    } label: {
+                        if favorites.contains(batter) {
+                            Label("Favorite", systemImage: "star.fill")
+                                .labelStyle(.titleAndIcon)
+                        } else {
+                            Label("Favorite", systemImage: "star")
+                                .labelStyle(.titleAndIcon)
+                        }
+                    }
+                }
             }
         }
     }
