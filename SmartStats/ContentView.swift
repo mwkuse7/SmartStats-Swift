@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var favoriteBatters = FavoriteBatters()
+    @State private var favoritePitchers = FavoritePitchers()
+    
     var body: some View {
         TabView {
             Tab("Batters", systemImage: "figure.baseball") {
@@ -22,7 +25,8 @@ struct ContentView: View {
                 AllPitchersView()
             }
         }
-
+        .environment(favoriteBatters)
+        .environment(favoritePitchers)
     }
 }
 
