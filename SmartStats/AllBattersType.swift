@@ -21,9 +21,9 @@ struct BatterSeason: Codable, Equatable, Identifiable {
     let team: Team
     let player: Player
     let league: League
-    let numTeams: Int
-    let rank: Int
-    let position: Position
+    let numTeams: Int?
+    let rank: Int?
+    let position: Position?
     
     var id: Int {
         player.id
@@ -73,6 +73,23 @@ struct BatterSeason: Codable, Equatable, Identifiable {
             case link
             case firstName
             case lastName
+        }
+        
+        init(id: Int, fullName: String, link: String, firstName: String, lastName: String) {
+            self.id = id
+            self.fullName = fullName
+            self.link = link
+            self.firstName = firstName
+            self.lastName = lastName
+        }
+        
+        init(from decoder: any Decoder) throws {
+            let container: KeyedDecodingContainer<BatterSeason.Player.CodingKeys> = try decoder.container(keyedBy: BatterSeason.Player.CodingKeys.self)
+            self.id = try container.decode(Int.self, forKey: BatterSeason.Player.CodingKeys.id)
+            self.fullName = try container.decode(String.self, forKey: BatterSeason.Player.CodingKeys.fullName)
+            self.link = try container.decode(String.self, forKey: BatterSeason.Player.CodingKeys.link)
+            self.firstName = try container.decodeIfPresent(String.self, forKey: BatterSeason.Player.CodingKeys.firstName) ?? "John"
+            self.lastName = try container.decodeIfPresent(String.self, forKey: BatterSeason.Player.CodingKeys.lastName) ?? "Doe"
         }
     }
     
@@ -189,7 +206,20 @@ struct BatterSeason: Codable, Equatable, Identifiable {
     static func ==(lhs: BatterSeason, rhs: BatterSeason) -> Bool {
         lhs.player.id == rhs.player.id
     }
-    
+}
+
+extension BatterSeason {
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: BatterSeason.CodingKeys.self)
+        self.season = try container.decode(String.self, forKey: .season)
+        self.stat = try container.decode(BatterSeason.Stat.self, forKey: .stat)
+        self.team = try container.decode(BatterSeason.Team.self, forKey: .team)
+        self.player = try container.decode(BatterSeason.Player.self, forKey: .player)
+        self.league = try container.decode(BatterSeason.League.self, forKey: .league)
+        self.numTeams = try container.decodeIfPresent(Int.self, forKey: .numTeams)
+        self.rank = try container.decodeIfPresent(Int.self, forKey: .rank)
+        self.position = try container.decodeIfPresent(BatterSeason.Position.self, forKey: .position)
+    }
 }
 
 struct AllBatters: Codable {
