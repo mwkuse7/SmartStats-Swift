@@ -52,6 +52,7 @@ struct BatterDetailView: View {
                 
                 Spacer()
             }
+            .scrollBounceBehavior(.basedOnSize)
             .padding(.vertical, 20)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -102,7 +103,6 @@ struct BatterDetailView: View {
         } catch {
             print("Error loading players: \(error.localizedDescription)")
         }
-        
     }
 }
 
