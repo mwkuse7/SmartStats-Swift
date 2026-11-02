@@ -9,7 +9,6 @@ import SwiftUI
 
 struct AllBattersView: View {
     @State private var showingPlayerView = false
-//    @State private var activePlayer: BatterSeason? = nil
     
     @State private var players: [BatterSeason] = []
 
