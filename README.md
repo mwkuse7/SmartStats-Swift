@@ -8,11 +8,11 @@ SmartStats is the solution for easily tracking a variety of MLB player statistic
 ## Features
 Upon launching the application, the user will be greeted with a list of qualified offensive players that can then be sorted by a specific statistic of their choosing, such as batting average, on-base-plus-slugging, slugging, home runs, etc.
 
-// Screenshot for AllBatters View
+![AllBatters View](/screenshots/AllBatters.png)
 
 Users can view all qualified MLB pitchers by selecting the "Pitchers" tab in the tab bar at the bottom of the screen. The results can then be sorted by a specific pitching or defensive metric such as earned-run average, strikeouts-per-nine innings, walks and hits per inning pitched, etc.
 
-// Screenshot for AllPitchers View
+![AllPitchers View](/screenshots/AllPitchers.png)
 
 Additionally, users can favorite a specific player to add them to a subset of MLB batters and pitchers called "Favorites". These favorited players are much easier to access, which makes keeping up with player performance a breeze.
 
