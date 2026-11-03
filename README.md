@@ -20,7 +20,10 @@ Users can view all qualified MLB pitchers by selecting the "Pitchers" tab in the
 
 Additionally, users can favorite a specific player to add them to a subset of MLB batters and pitchers called "Favorites". These favorited players are much easier to access, which makes keeping up with player performance a breeze.
 
-// Screenshot for Favorites View
+<div align="center">
+   <img src="/screenshots/EmptyFavoritesView.png" width="30%">
+   <img src="/screenshots/FavoritePlayersView.png" width="30%">
+</div>
 
 Both the Batters view and the Pitchers view contain built-in search functionality that allows quick and easy lookup for any qualified player.
 
