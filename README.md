@@ -1,7 +1,9 @@
 ## SmartStats
 SmartStats is a solution for staying up to date with MLB player statistics on iOS.
 
-// GIF showing off app features
+<div align="center">
+   <img src="/screenshots/SmartStats-Demo.gif" width="30%">
+</div>
 
 SmartStats is the solution for easily tracking a variety of MLB player statistics on iOS devices. It allows you to stay up to date with critical batting and pitching stats for qualified players, including batting average, OPS, ERA, and more. The clean, visually appealing, and easy-to-navigate UI eliminates the need to poke through dozens of screens in other applications to find the statistics you're pursuing. SmartStats leverages the official MLB API to allow tracking and ranking nearly every statistic available for qualified MLB players.
 
@@ -34,7 +36,7 @@ Both the Batters view and the Pitchers view contain built-in search functionalit
 Tapping the name of any player displayed in the Batters view, Pitchers view, or Favorites view presents the Detail View for the desired player, which contains the stats for every season the corresponding player has played in Major League Baseball.
 
 <div align="center">
-   <img src="/screenshots/DetailView.png" width="30%">
+   <img src="/screenshots/BatterDetailView.png" width="30%">
 </div>
 
 ## Tech Stack
