@@ -59,4 +59,3 @@ SmartStats is an independent project and is not affiliated with or endorsed by M
 Future updates will leverage Apple's CoreML framework to predict player statistics for future seasons and potentially predict stats on a per-game basis.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
