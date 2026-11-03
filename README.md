@@ -27,13 +27,15 @@ Additionally, users can favorite a specific player to add them to a subset of ML
 
 Both the Batters view and the Pitchers view contain built-in search functionality that allows quick and easy lookup for any qualified player.
 
-// Screenshot for search method
+<div align="center">
+   <img src="/screenshots/SearchMethod.png" width="30%">
+</div>
 
 Tapping the name of any player displayed in the Batters view, Pitchers view, or Favorites view presents the Detail View for the desired player, which contains the stats for every season the corresponding player has played in Major League Baseball.
 
-// Screenshot of the Detail View
-
-## Screenshots
+<div align="center">
+   <img src="/screenshots/DetailView.png" width="30%">
+</div>
 
 ## Tech Stack
 - Swift 5.x / SwiftUI
